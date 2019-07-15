@@ -90,6 +90,79 @@ public class UITool : MonoBehaviour {
 		Debug.Log (sbuild.ToString());
 	}
 
+	[MenuItem("Custom/CheckTexture")]
+	public static void CheckTexture()
+	{
+		TextureImporterFormat formatType;
+		TextureImporterFormat specialFormatType;
+		int type = 1;//1安卓，2苹果
+		string platform = "Standalone";//平台
+		if (type == 1) platform = "Android";
+		else if (type == 2) platform = "iPhone";
+		
+		bool withApha = false; //贴图是否带 Apha 
+		string[] Extensions = { "*.png","*.jpg","*.tga"}; //要处理的贴图后缀
+		string texturePath = Application.dataPath+"/Texture";//贴图路径
+
+		int maxSize = 1024;
+		int compressionQuality;
+		if (type == 1)
+		{
+			formatType = withApha ? TextureImporterFormat.ETC2_RGBA8 : TextureImporterFormat.ETC_RGB4;
+			specialFormatType = TextureImporterFormat.ETC2_RGBA8;
+			compressionQuality = 100;
+		}
+		else
+		{
+			formatType = withApha ? TextureImporterFormat.PVRTC_RGBA4 : TextureImporterFormat.PVRTC_RGB4;
+			specialFormatType = TextureImporterFormat.RGBA16;
+			compressionQuality = 100;
+		}
+	
+		TextureImporter texture;
+		TextureImporterPlatformSettings tis;
+		TextureImporterFormat tif;
+		for (int j = 0; j < Extensions.Length; j++)
+		{
+			string extension = Extensions[j];
+			string [] files = Directory.GetFiles(texturePath, extension, SearchOption.AllDirectories);
+			for (int i = 0; i < files.Length; i++) 
+			{
+				string info = (i + 1) + "/" + files.Length+"total: ("+j+"/"+Extensions.Length+")";
+				float progress = (i + 1) * 1.0f / files.Length;
+				if (EditorUtility.DisplayCancelableProgressBar("修改贴图中", info + " ", progress))
+				{
+					break;
+				}
+				
+				FileInfo file = new FileInfo(files[i]);
+				string path = file.FullName.Substring(file.FullName.IndexOf("Assets"));
+				texture = (TextureImporter)TextureImporter.GetAtPath(path);
+				tis = texture.GetPlatformTextureSettings(platform);
+				
+				if (texture.textureType != TextureImporterType.Default || texture.isReadable || texture.mipmapEnabled ||
+				    texture.npotScale != TextureImporterNPOTScale.ToNearest || tis.format != formatType ||
+				    tis.compressionQuality != compressionQuality || !tis.overridden || (maxSize != -1 && tis.maxTextureSize != maxSize))
+				{
+					texture.textureType = TextureImporterType.Default;
+					texture.isReadable = false;
+					texture.mipmapEnabled = false;
+					texture.npotScale = TextureImporterNPOTScale.ToNearest;
+
+					tis.format = formatType;
+					tis.compressionQuality = compressionQuality;
+					tis.overridden = true;
+					if(maxSize != -1) tis.maxTextureSize = maxSize;
+					texture.SetPlatformTextureSettings(tis);
+					texture.SaveAndReimport();
+				}
+				
+			}
+		}
+		EditorUtility.ClearProgressBar();
+		AssetDatabase.Refresh();
+	}
+
 
 	static List<string> CheckFolderSprites(string selectPath)
 	{
