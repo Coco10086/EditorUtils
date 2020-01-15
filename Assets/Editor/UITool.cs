@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using UnityEditor.Animations;
 using UnityEngine.UI;
 public class UITool : MonoBehaviour {
 	// Rename Child Name Sequential name (item1,item2,item3...)
@@ -209,5 +210,114 @@ public class UITool : MonoBehaviour {
 		//save log 
 		//EditorUtility.ClearProgressBar ();
 		Debug.Log (sbuild.ToString());
+	}
+	
+	
+	[MenuItem("Custom/build Android")]
+	public static void BuildAndroid()
+	{
+		string time = DateTime.Now.ToString("MM.dd");
+		string savePath = "/Users/Desktop/" + "Android" + time;
+		Debug.Log("==savePath:"+savePath);
+		DirectoryInfo dirinfo = new DirectoryInfo(savePath);
+		if (dirinfo.Exists)
+		{
+			dispDirs(dirinfo);
+		}
+		else
+		{
+			dirinfo.Create();
+		}
+		BuildPipeline.BuildPlayer(FindEnableEditorrScenes(), savePath, EditorUserBuildSettings.activeBuildTarget, BuildOptions.None);
+	}
+	
+	
+	[MenuItem("Custom/BuildController")]
+	public static void autioBuildController()
+	{
+		AnimatorController animatorController = AnimatorController.CreateAnimatorControllerAtPath("Assets/animation.controller");
+		AnimatorControllerLayer layer = animatorController.layers[0];
+		
+		//clip文件名
+		List<string> list = new List<string>();
+		list.Add("AccountToRoot");
+		list.Add("root");
+
+		
+		for (int i = 0; i < list.Count; i++)
+		{
+			//文件路径
+			string path = string.Format("Assets/Res/Ani/cam/{0}.anim", list[i]);
+			AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+			if (clip != null)
+			{
+				AnimatorStateMachine stateMachine = layer.stateMachine;
+				AnimatorState state = stateMachine.AddState(clip.name);
+				state.motion = clip;
+				//相当于 AnimatorController 中的连线
+				AnimatorStateTransition transition = stateMachine.AddAnyStateTransition(state);
+				
+				
+			}
+			else
+			{
+				Debug.Log("路径找不到 animation clip文件 ");
+			}
+		}
+		AssetDatabase.SaveAssets();
+	}
+
+	[MenuItem("Custom/SetTextureConfig")]
+	public static void SetTextureConfig()
+	{
+		string filePath = "";
+		Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(filePath);
+		if(texture==null)
+			return;
+		int textureSize = Mathf.Max(texture.height, texture.width);
+		TextureImporter importer = AssetImporter.GetAtPath(filePath) as TextureImporter;
+
+		importer.textureType = TextureImporterType.Default;
+		importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings
+		{
+			overridden = true,
+			name = "Android", //iPhone
+			maxTextureSize = textureSize,
+			format = TextureImporterFormat.ETC_RGB4Crunched, //ASTC ios 平台
+			textureCompression = TextureImporterCompression.Compressed,
+			resizeAlgorithm = TextureResizeAlgorithm.Mitchell
+		});
+		importer.SaveAndReimport();
+		AssetDatabase.ImportAsset(filePath);
+		
+		AssetDatabase.Refresh();
+	}
+
+	public static string[] FindEnableEditorrScenes()
+	{
+		List<string> editorScenes = new List<string>();
+		foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+		{
+			if (!scene.enabled) continue;
+			editorScenes.Add(scene.path);
+		}
+		return editorScenes.ToArray();
+	}
+	
+	public static void dispDirs(DirectoryInfo dir)
+	{
+		//返回目录中的目录列表对象也就是所有子目录
+		DirectoryInfo[] directories = dir.GetDirectories();
+		//返回目录下的所有文件
+		FileInfo[] f = dir.GetFiles();
+		foreach (FileInfo item in f)
+		{
+			item.Delete();//删除目录下所有文件
+		}
+		foreach (DirectoryInfo dirX in directories)
+		{
+			dispDirs(dirX);//递归删除所有文件夹
+			dirX.Delete();
+		}
 	}
 }

@@ -1,5 +1,9 @@
 #EditorUtils
-1. Rename Child Name Ë³ĞòÃüÃûÑ¡ÖĞÒ»¸ö GameObjectµÄ×ÓGameObjectµÄÃû×Ö
-2. Find Missing Image  ²éÕÒÑ¡ÔñÎÄ¼ş¼ĞorÒ»¸öprefabÖĞÓĞ¶ªÊ§SpriteµÄGameObject
-3. Check UI Image Sprite source  ²éÕÒÑ¡ÔñÎÄ¼ş¼ĞorÒ»¸öprefabÖĞËùÓĞImageµÄÒıÓÃÍ¼Æ¬
-3. CheckTexture  ĞŞ¸ÄÎÄ¼ş¼ĞÏÂÌùÍ¼£¬Í³Ò»ĞŞ¸Ä
+
+1.Rename Child Name é¡ºåºå‘½åé€‰ä¸­ä¸€ä¸ª GameObjectçš„å­GameObjectçš„åå­—
+2.Find Missing Image æŸ¥æ‰¾é€‰æ‹©æ–‡ä»¶å¤¹orä¸€ä¸ªprefabä¸­æœ‰ä¸¢å¤±Spriteçš„GameObject
+3.Check UI Image Sprite source æŸ¥æ‰¾é€‰æ‹©æ–‡ä»¶å¤¹orä¸€ä¸ªprefabä¸­æ‰€æœ‰Imageçš„å¼•ç”¨å›¾ç‰‡
+4.CheckTexture ä¿®æ”¹æ–‡ä»¶å¤¹ä¸‹è´´å›¾ï¼Œç»Ÿä¸€ä¿®æ”¹
+5.BuildAndroid æ ¹æ®playSettingè®¾ç½® build apk æˆ–è€… android é¡¹ç›®
+6.AutioBuildController æ ¹æ®animation ç”Ÿæˆ AnimatorController
+7.SetTextureConfig è®¾ç½®ä¸€ä¸ªè·¯å¾„è´´å›¾å¹³å°å¯¹åº”çš„æ ¼å¼
