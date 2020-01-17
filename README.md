@@ -7,3 +7,4 @@
 5.BuildAndroid 根据playSetting设置 build apk 或者 android 项目
 6.AutioBuildController 根据animation 生成 AnimatorController
 7.SetTextureConfig 设置一个路径贴图平台对应的格式
+8.EditorResourceSetting 自动设置导入资源属性选项（模型、图片、声音)
