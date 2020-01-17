@@ -58,6 +58,7 @@ public class UITool : MonoBehaviour {
 	[MenuItem("Custom/Find Missing Image")]
 	public static void LoseSourceImage()
 	{
+		StringBuilder sbuild = new StringBuilder ();
 		UnityEngine.Object selectobj = Selection.activeObject;
 		GameObject parent = selectobj as GameObject;
 		List<string> list;
@@ -69,7 +70,6 @@ public class UITool : MonoBehaviour {
 			list.Add (AssetDatabase.GetAssetPath (parent));
 		}
 
-		StringBuilder sbuild = new StringBuilder ();
 		for (int i = 0; i < list.Count; ++i) {
 			GameObject obj = AssetDatabase.LoadAssetAtPath<GameObject> (list[i]);
 			if(obj!= null)
@@ -82,9 +82,18 @@ public class UITool : MonoBehaviour {
 						sbuild.Append (" \t chid Object name:"+comps[j].gameObject.name+"\n");
 					}
 				}
-				if(comps[i].sprite ==null )
+				
+				SerializedObject so = new SerializedObject(comps[i]);
+				var sp = so.GetIterator();
+				while (sp.NextVisible(true))
 				{
-					sbuild.Append ("GameObject Path:"+comps[i].gameObject.name+"\n");
+					if (sp.propertyType == SerializedPropertyType.ObjectReference)
+					{
+						if (sp.objectReferenceValue == null && sp.objectReferenceInstanceIDValue != 0)
+						{
+							sbuild.Append ("GameObject Path:"+comps[i].gameObject.name+"\n");
+						}
+					}
 				}
 			}
 		}
